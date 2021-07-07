@@ -213,6 +213,7 @@ pub mod pallet {
             <bridge::Module<T>>::transfer_fungible(
                 dest_id,
                 resource_id,
+                token_addr,
                 recipient,
                 U256::from(amount.saturated_into::<u128>()),
             );

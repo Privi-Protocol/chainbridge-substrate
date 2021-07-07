@@ -132,6 +132,7 @@ fn asset_transfer_success() {
         let metadata = vec![];
         let amount = 100;
         let token_id = vec![1, 2, 3, 4];
+        let token_addr = H160::from_slice(&[1, 2, 3]);
 
         assert_ok!(Bridge::set_threshold(Origin::root(), TEST_THRESHOLD,));
 
@@ -139,6 +140,7 @@ fn asset_transfer_success() {
         assert_ok!(Bridge::transfer_fungible(
             dest_id.clone(),
             resource_id.clone(),
+            token_addr.clone(),
             to.clone(),
             amount.into()
         ));
@@ -148,6 +150,7 @@ fn asset_transfer_success() {
                 dest_id.clone(),
                 1,
                 resource_id.clone(),
+                token_addr.clone(),
                 amount.into(),
                 to.clone(),
             )),
@@ -189,6 +192,7 @@ fn asset_transfer_invalid_chain() {
         let chain_id = 2;
         let bad_dest_id = 3;
         let resource_id = [4; 32];
+        let token_addr = H160::from_slice(&[1, 2, 3]);
 
         assert_ok!(Bridge::whitelist_chain(Origin::root(), chain_id.clone()));
         assert_events(vec![Event::bridge(RawEvent::ChainWhitelisted(
@@ -196,7 +200,13 @@ fn asset_transfer_invalid_chain() {
         ))]);
 
         assert_noop!(
-            Bridge::transfer_fungible(bad_dest_id, resource_id.clone(), vec![], U256::zero()),
+            Bridge::transfer_fungible(
+                bad_dest_id,
+                resource_id.clone(),
+                token_addr.clone(),
+                vec![],
+                U256::zero()
+            ),
             Error::<Test>::ChainNotWhitelisted
         );
 

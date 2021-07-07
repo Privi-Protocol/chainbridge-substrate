@@ -11,7 +11,7 @@ use frame_support::{
 };
 
 use frame_system::{self as system, ensure_root, ensure_signed};
-use sp_core::U256;
+use sp_core::{H160, U256};
 use sp_runtime::traits::{AccountIdConversion, Dispatchable};
 use sp_runtime::{ModuleId, RuntimeDebug};
 use sp_std::prelude::*;
@@ -120,8 +120,8 @@ decl_event! {
         RelayerAdded(AccountId),
         /// Relayer removed from set
         RelayerRemoved(AccountId),
-        /// FunglibleTransfer is for relaying fungibles (dest_id, nonce, resource_id, amount, recipient, metadata)
-        FungibleTransfer(ChainId, DepositNonce, ResourceId, U256, Vec<u8>),
+        /// FunglibleTransfer is for relaying fungibles (dest_id, nonce, resource_id, token_addr, amount, recipient, metadata)
+        FungibleTransfer(ChainId, DepositNonce, ResourceId, H160, U256, Vec<u8>),
         /// NonFungibleTransfer is for relaying NFTS (dest_id, nonce, resource_id, token_id, recipient, metadata)
         NonFungibleTransfer(ChainId, DepositNonce, ResourceId, Vec<u8>, Vec<u8>, Vec<u8>),
         /// GenericTransfer is for a generic data payload (dest_id, nonce, resource_id, metadata)
@@ -539,6 +539,7 @@ impl<T: Config> Module<T> {
     pub fn transfer_fungible(
         dest_id: ChainId,
         resource_id: ResourceId,
+        token_addr: H160,
         to: Vec<u8>,
         amount: U256,
     ) -> DispatchResult {
@@ -551,6 +552,7 @@ impl<T: Config> Module<T> {
             dest_id,
             nonce,
             resource_id,
+            token_addr,
             amount,
             to,
         ));
